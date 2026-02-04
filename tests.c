@@ -163,9 +163,9 @@ void test_string_substr(void) {
 void test_string_array_join(void) {
   StringArray arr = string_array_init(2);
 
-  String one = String_from("one ");
-  String two = String_from("two ");
-  String three = String_from("three ");
+  String one = String_from("one");
+  String two = String_from("two");
+  String three = String_from("three");
   String four = String_from("four");
 
   string_array_push(&arr, one);
@@ -175,6 +175,13 @@ void test_string_array_join(void) {
   String semicolon = String_from(";");
   String *out = string_array_join(&arr, semicolon);
 
+  String expected = String_from("one;two;three;four");
+
+  printf("out->chars = %s\n", out->chars);
+  printf("expected.chars = %s\n", expected.chars);
+
+  assert(String_cmp(out, &expected));
+
   free_string_array(&arr);
   free_string(out);
   free(out);
@@ -183,4 +190,5 @@ void test_string_array_join(void) {
   free_string(&two);
   free_string(&one);
   free_string(&semicolon);
+  free_string(&expected);
 }

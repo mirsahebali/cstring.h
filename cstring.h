@@ -331,7 +331,13 @@ String *string_array_join(StringArray *arr, String sep) {
     free_string(out);
     free(out);
     String val = string_array_get(arr, i);
-    out = String_join(3, &temp, &val, &sep);
+    if (i == arr->size - 1) {
+      String empty = (String){"", 0};
+      out = String_join(3, &temp, &val, &empty);
+    } else {
+      out = String_join(3, &temp, &val, &sep);
+    }
+
     free_string(&temp);
     temp = String_clone(out);
   }

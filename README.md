@@ -45,10 +45,12 @@ free_string(&foo_string);
 free_string_array(&foo_string_array);
 ```
 
-
-> I have made this small library for use in my personal projects in which I often redefine this string
+> It is recommended to use this with memory arenas/bump allocators
 
 > [!NOTE]
-> I have tried to handle as much errors and edge cases as possible and update it on the go based on requirements
-> I have added asserts all around the projects, so they may vanish in release mode
-> This may or may not be production ready to use it at your own caution
+> - I have tried to handle as much errors and edge cases as possible and update it on the go based on requirements
+> - I have added asserts all around the projects, so they may vanish in release mode
+> - This may or may not be production ready to use it at your own caution
+
+
+> I have made this small library for use in my personal projects in which I often redefine this string

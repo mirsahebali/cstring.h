@@ -31,6 +31,8 @@ String and String array implementation in pure C99
 
 
 - First define implementation before including the file, then put the include it in your required file
+
+**add it to the end or at last of your all of your includes** 
 ```c
 #define CSTRING_IMPLEMENTATION
 #include "cstring.h"

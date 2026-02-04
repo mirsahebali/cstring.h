@@ -55,32 +55,32 @@ String String_from(const char *str);
 // initialize a new string with a set capacity
 String String_new_n(int32_t len);
 
-String String_clone(String *);
+String String_clone(const String *);
 
-int32_t String_concat(String *dest, String *left, String *right);
+String *String_concat(const String *left, const String *right);
 
 // join the given number of `String` elements from the list
-String String_join(int32_t n, ...);
+String *String_join(int32_t n, ...);
 
-String concat_char(String *, char);
-String concat_cstr(String *, const char *);
+String concat_char(const String *, char);
+String concat_cstr(const String *, const char *);
 
 // Create a new single character string
 String String_from_char(char ch);
 
-String String_substr_range(String *, int32_t begin, int32_t end);
+String String_substr_range(const String *, int32_t begin, int32_t end);
 
 // clone the data from `value`
 // WARN: cleanup value if not using it anymore
 // may lead to mem leak
-String String_clone(String *value);
+String String_clone(const String *value);
 
 // moves the data from `src` and frees up src;
 String String_move(String *src);
 
-char String_char_at(String *, int32_t);
+char String_char_at(const String *, int32_t);
 
-bool String_cmp(String *left, String *right);
+bool String_cmp(const String *left, const String *right);
 
 // Always call this after reassigning strings or being done after use
 void free_string(String *s);
@@ -92,13 +92,15 @@ typedef struct {
 } StringArray;
 
 StringArray string_array_init(int32_t capacity);
-int32_t string_array_push(StringArray *self, String);
+int32_t string_array_push(StringArray *self, const String);
 int32_t string_array_size(const StringArray *self);
 bool string_array_reserve(StringArray *self);
 int32_t string_array_capacity(const StringArray *);
 String string_array_get(const StringArray *self, int32_t index);
 void print_string_array(const StringArray *);
 void free_string_array(StringArray *self);
+
+String *string_array_join(StringArray *self, String sep);
 
 #endif // !CSTRING_H
 
@@ -117,7 +119,7 @@ String String_new_n(int32_t len) {
   return (String){buf, len};
 }
 
-String concat_char(String *input, char ch) {
+String concat_char(const String *input, char ch) {
   size_t new_len = input->length + 1;
   char *buf = (char *)malloc(sizeof(char) * (new_len + 1));
   assert(buf != NULL);
@@ -128,7 +130,7 @@ String concat_char(String *input, char ch) {
 
   return (String){buf, (int32_t)new_len};
 }
-String concat_cstr(String *input, const char *str) {
+String concat_cstr(const String *input, const char *str) {
   assert(input != NULL);
   size_t new_len = input->length + strlen(str);
   char *buf = (char *)malloc(sizeof(char) * (new_len + 1)); // +1 for '\0'
@@ -140,7 +142,7 @@ String concat_cstr(String *input, const char *str) {
   return (String){buf, (int32_t)new_len};
 }
 
-bool String_cmp(String *left, String *right) {
+bool String_cmp(const String *left, const String *right) {
   if (left == right)
     return true;
   if (left == NULL || right == NULL)
@@ -150,7 +152,7 @@ bool String_cmp(String *left, String *right) {
          (left->length == right->length);
 }
 
-char String_char_at(String *input, int32_t index) {
+char String_char_at(const String *input, int32_t index) {
   assert(input != NULL);
 
   assert(index < input->length && index >= 0);
@@ -167,7 +169,7 @@ String String_from_char(char ch) {
   return (String){c, 1};
 }
 
-String String_substr_range(String *input, int32_t begin, int32_t steps) {
+String String_substr_range(const String *input, int32_t begin, int32_t steps) {
   assert(input != NULL);
   assert((begin >= 0) && (begin < input->length));
   assert(begin + steps < input->length);
@@ -184,7 +186,7 @@ String String_substr_range(String *input, int32_t begin, int32_t steps) {
   return out;
 }
 
-String String_clone(String *value) {
+String String_clone(const String *value) {
   assert(value != NULL);
   char *buf = (char *)malloc(value->length + 1);
   int32_t len = value->length;
@@ -196,31 +198,46 @@ String String_clone(String *value) {
   };
 }
 
-// concat two strings and put it in `dest` and return the new size of the string
-int32_t String_concat(String *dest, String *left, String *right) {
+// concat two strings and return it in dest
+String *String_concat(const String *left, const String *right) {
+  String *dest = (String *)malloc(sizeof(String));
+  int32_t left_len = (left != NULL ? left->length : 0);
+  int32_t right_len = (right != NULL ? right->length : 0);
 
-  int32_t new_size = left->length + right->length;
-  free_string(dest);
+  int32_t new_size = left_len + right_len;
   dest->chars = (char *)malloc(new_size + 1);
-  dest->chars[0] = '\0';
+  if (dest->chars == NULL) {
+    printf("Unable to allocate memory\n");
+    free_string(dest);
+    return NULL;
+  }
   dest->length = new_size;
-  if (left != NULL)
-    strcat(dest->chars, left->chars);
-  if (right != NULL)
-    strcat(dest->chars, right->chars);
 
-  return dest->length;
+  int32_t offset = 0;
+  if (left != NULL && left->chars != NULL) {
+    memcpy(dest->chars, left->chars, left_len);
+    offset += left_len;
+  }
+
+  if (right != NULL && right->chars != NULL)
+    memcpy(dest->chars + offset, right->chars, right_len);
+
+  dest->chars[dest->length] = '\0';
+
+  return dest;
 }
 
-String String_join(int32_t n, ...) {
-  String out;
+String *String_join(int32_t n, ...) {
+  String *out = NULL;
   String temp = String_from("");
   va_list args;
   va_start(args, n);
   for (int32_t i = 0; i < n; i++) {
-    String_concat(&out, &temp, va_arg(args, String *));
+    free_string(out);
+    free(out);
+    out = String_concat(&temp, va_arg(args, String *));
     free_string(&temp);
-    temp = String_clone(&out);
+    temp = String_clone(out);
   }
   va_end(args);
 
@@ -274,9 +291,9 @@ bool string_array_reserve(StringArray *self) {
   self->capacity = new_cap;
   return true;
 }
-int32_t string_array_push(StringArray *self, String data) {
+int32_t string_array_push(StringArray *self, const String data) {
   assert(self != NULL);
-  String new_data = String_move(&data);
+  String new_data = String_clone(&data);
   assert(self != NULL);
   if (!string_array_reserve(self)) {
 
@@ -304,6 +321,24 @@ void print_string_array(const StringArray *arr) {
     String s = string_array_get(arr, i);
     printf("%s\n", s.chars);
   }
+}
+
+String *string_array_join(StringArray *arr, String sep) {
+  String *out = NULL;
+  String temp;
+
+  for (int32_t i = 0; i < arr->size; i++) {
+    free_string(out);
+    free(out);
+    String val = string_array_get(arr, i);
+    out = String_join(3, &temp, &val, &sep);
+    free_string(&temp);
+    temp = String_clone(out);
+  }
+
+  free_string(&temp);
+
+  return out;
 }
 
 void free_string_array(StringArray *self) {

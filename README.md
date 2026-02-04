@@ -45,14 +45,20 @@ String and String array implementation in pure C99
 
 free_string(&foo_string);
 free_string_array(&foo_string_array);
+
 ```
 
-> It is recommended to use this with memory arenas/bump allocators
+
+> [!IMPORTANT]
+> Also free the bindings if they were heap allocated else leave it be as the stack will clean it up
+> - Be careful of the `lifetimes` of each string you allocate
+
+
 
 > [!NOTE]
 > - I have tried to handle as much errors and edge cases as possible and update it on the go based on requirements
 > - I have added asserts all around the projects, so they may vanish in release mode
 > - This may or may not be production ready to use it at your own caution
+> It is recommended to use this with memory arenas/bump allocators
 
 
-> I have made this small library for use in my personal projects in which I often redefine this string

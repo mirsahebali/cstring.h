@@ -217,7 +217,7 @@ String String_join(int32_t n, ...) {
   String temp = String_from("");
   va_list args;
   va_start(args, n);
-  for (size_t i = 0; i < n; i++) {
+  for (int32_t i = 0; i < n; i++) {
     String_concat(&out, &temp, va_arg(args, String *));
     free_string(&temp);
     temp = String_clone(&out);

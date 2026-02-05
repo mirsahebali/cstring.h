@@ -55,7 +55,8 @@ String String_from(const char *str);
 // initialize a new string with a set capacity
 String String_new_n(int32_t len);
 
-#define STR_NEW(value) (String){value, (int32_t)strlen(value)};
+#define STR_NEW(value)                                                         \
+  (String) { value, (int32_t)strlen(value) }
 
 String String_clone(const String *);
 

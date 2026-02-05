@@ -62,3 +62,4 @@ free_string_array(&foo_string_array);
 > It is recommended to use this with memory arenas/bump allocators
 
 
+Check [usage here](USAGE.md) 

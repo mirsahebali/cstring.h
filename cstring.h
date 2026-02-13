@@ -296,7 +296,8 @@ int32_t String_to_int(String *str) { return atoi(str->chars); }
 String String_from_int(int32_t input) {
   String out;
   out.chars = (char *)malloc(13);
-  snprintf(out.chars, 13, "%d", input);
+  int len = snprintf(out.chars, 13, "%d", input);
+  out.length = len;
   return out;
 }
 

@@ -85,6 +85,9 @@ char String_char_at(const String *, int32_t);
 
 bool String_cmp(const String *left, const String *right);
 
+int32_t String_to_int(String *str);
+String String_from_int(int32_t);
+
 // Always call this after reassigning strings or being done after use
 void free_string(String *s);
 
@@ -259,6 +262,42 @@ String String_move(String *src) {
       .chars = out,
       .length = len,
   };
+}
+
+int32_t char_to_int(char input) {
+  switch (input) {
+  case '0':
+    return 0;
+  case '1':
+    return 1;
+  case '2':
+    return 2;
+  case '3':
+    return 3;
+  case '4':
+    return 4;
+  case '5':
+    return 5;
+  case '6':
+    return 6;
+  case '7':
+    return 7;
+  case '8':
+    return 8;
+  case '9':
+    return 9;
+  default:
+    return -1;
+  }
+}
+
+int32_t String_to_int(String *str) { return atoi(str->chars); }
+
+String String_from_int(int32_t input) {
+  String out;
+  out.chars = (char *)malloc(13);
+  snprintf(out.chars, 13, "%d", input);
+  return out;
 }
 
 void free_string(String *s) {

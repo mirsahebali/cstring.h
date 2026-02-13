@@ -17,6 +17,7 @@ void test_string_substr(void);
 void test_string_concat(void);
 void test_string_join(void);
 void test_string_array_join(void);
+void test_string_to_int(void);
 
 int main() {
 
@@ -29,7 +30,22 @@ int main() {
   test_string_concat();
   test_string_join();
   test_string_array_join();
+  test_string_to_int();
   return 0;
+}
+
+void test_string_to_int(void) {
+  String input = STR_NEW("-1");
+  int32_t out = String_to_int(&input);
+  assert(out == -1);
+
+  input = STR_NEW("-345");
+  out = String_to_int(&input);
+  assert(out == -345);
+
+  input = STR_NEW("34583");
+  out = String_to_int(&input);
+  assert(out == 34583);
 }
 
 void test_string_from(void) {

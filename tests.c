@@ -36,15 +36,20 @@ int main() {
 
 void test_string_to_int(void) {
   String input = STR_NEW("-1");
-  int32_t out = String_to_int(&input);
+  int32_t out;
+  bool is_success = String_to_int(&input, &out);
+  assert(is_success);
   assert(out == -1);
 
   input = STR_NEW("-345");
-  out = String_to_int(&input);
+
+  is_success = String_to_int(&input, &out);
+  assert(is_success);
   assert(out == -345);
 
   input = STR_NEW("34583");
-  out = String_to_int(&input);
+  is_success = String_to_int(&input, &out);
+  assert(is_success);
   assert(out == 34583);
 }
 

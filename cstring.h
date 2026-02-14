@@ -85,7 +85,7 @@ char String_char_at(const String *, int32_t);
 
 bool String_cmp(const String *left, const String *right);
 
-int32_t String_to_int(String *str);
+bool String_to_int(String *str, int *out);
 String String_from_int(int32_t);
 
 // Always call this after reassigning strings or being done after use
@@ -291,7 +291,19 @@ int32_t char_to_int(char input) {
   }
 }
 
-int32_t String_to_int(String *str) { return atoi(str->chars); }
+bool String_to_int(String *str, int *out) {
+  if (str == NULL || out == NULL || str->chars == NULL || str->length == 0 ||
+      str.length > 12)
+    return false;
+
+  int res = atoi(str->chars);
+  String zero = STR_NEW("0");
+  if (res == 0 && !String_cmp(str, &zero)) {
+    return false;
+  }
+  *out = res;
+  return true;
+}
 
 String String_from_int(int32_t input) {
   String out;

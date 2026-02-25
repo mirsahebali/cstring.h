@@ -178,7 +178,7 @@ String String_from_char(char ch) {
 String String_substr_range(const String *input, int32_t begin, int32_t steps) {
   assert(input != NULL);
   assert((begin >= 0) && (begin < input->length));
-  assert(begin + steps < input->length);
+  assert(begin + steps <= input->length);
 
   String out = String_new_n(steps + 1);
   for (int i = begin; i < begin + steps; i++) {

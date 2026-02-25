@@ -58,12 +58,14 @@ String String_new_n(int32_t len);
 #define STR_NEW(value)                                                         \
   (String) { value, (int32_t)strlen(value) }
 
+#define STR_NULL (String){NULL, 0}
+
 String String_clone(const String *);
 
-String *String_concat(const String *left, const String *right);
+String String_concat(const String *left, const String *right);
 
 // join the given number of `String` elements from the list
-String *String_join(int32_t n, ...);
+String String_join(int32_t n, ...);
 
 String concat_char(const String *, char);
 String concat_cstr(const String *, const char *);
@@ -106,7 +108,7 @@ String string_array_get(const StringArray *self, int32_t index);
 void print_string_array(const StringArray *);
 void free_string_array(StringArray *self);
 
-String *string_array_join(StringArray *self, String sep);
+String string_array_join(StringArray *self, String sep);
 
 #endif // !CSTRING_H
 
@@ -205,45 +207,43 @@ String String_clone(const String *value) {
 }
 
 // concat two strings and return it in dest
-String *String_concat(const String *left, const String *right) {
-  String *dest = (String *)malloc(sizeof(String));
-  int32_t left_len = (left != NULL ? left->length : 0);
-  int32_t right_len = (right != NULL ? right->length : 0);
+String String_concat(const String *left, const String *right) {
+  String dest;
+  int32_t left_len = (left && left->chars) ? left->length : 0;
+  int32_t right_len = (right && right->chars) ? right->length : 0;
 
   int32_t new_size = left_len + right_len;
-  dest->chars = (char *)malloc(new_size + 1);
-  if (dest->chars == NULL) {
+  dest.chars = (char *)malloc(new_size + 1);
+  if (dest.chars == NULL) {
     printf("Unable to allocate memory\n");
-    free_string(dest);
-    return NULL;
+    return STR_NULL;
   }
-  dest->length = new_size;
+  dest.length = new_size;
 
   int32_t offset = 0;
   if (left != NULL && left->chars != NULL) {
-    memcpy(dest->chars, left->chars, left_len);
+    memcpy(dest.chars, left->chars, left_len);
     offset += left_len;
   }
 
   if (right != NULL && right->chars != NULL)
-    memcpy(dest->chars + offset, right->chars, right_len);
+    memcpy(dest.chars + offset, right->chars, right_len);
 
-  dest->chars[dest->length] = '\0';
+  dest.chars[dest.length] = '\0';
 
   return dest;
 }
 
-String *String_join(int32_t n, ...) {
-  String *out = NULL;
+String String_join(int32_t n, ...) {
+  String out = STR_NULL;
   String temp = String_from("");
   va_list args;
   va_start(args, n);
   for (int32_t i = 0; i < n; i++) {
-    free_string(out);
-    free(out);
+    free_string(&out);
     out = String_concat(&temp, va_arg(args, String *));
     free_string(&temp);
-    temp = String_clone(out);
+    temp = String_clone(&out);
   }
   va_end(args);
 
@@ -378,13 +378,12 @@ void print_string_array(const StringArray *arr) {
   }
 }
 
-String *string_array_join(StringArray *arr, String sep) {
-  String *out = NULL;
+String string_array_join(StringArray *arr, String sep) {
+  String out = STR_NULL;
   String temp;
 
   for (int32_t i = 0; i < arr->size; i++) {
-    free_string(out);
-    free(out);
+    free_string(&out);
     String val = string_array_get(arr, i);
     if (i == arr->size - 1) {
       String empty = (String){"", 0};
@@ -394,7 +393,7 @@ String *string_array_join(StringArray *arr, String sep) {
     }
 
     free_string(&temp);
-    temp = String_clone(out);
+    temp = String_clone(&out);
   }
 
   free_string(&temp);

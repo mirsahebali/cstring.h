@@ -135,16 +135,15 @@ void test_string_concat(void) {
 
   String left = String_from("Hello, ");
   String right = String_from("World");
-  String *dest = String_concat(&left, &right);
+  String dest = String_concat(&left, &right);
   String expected = String_from("Hello, World");
 
-  assert(String_cmp(dest, &expected));
+  assert(String_cmp(&dest, &expected));
 
-  free_string(dest);
+  free_string(&dest);
   free_string(&left);
   free_string(&right);
   free_string(&expected);
-  free(dest);
 }
 
 void test_string_join(void) {
@@ -155,12 +154,11 @@ void test_string_join(void) {
   String four = String_from("four");
   String expected = String_from("one two three four");
 
-  String *dest = String_join(4, &one, &two, &three, &four);
+  String dest = String_join(4, &one, &two, &three, &four);
 
-  assert(String_cmp(dest, &expected));
+  assert(String_cmp(&dest, &expected));
 
-  free_string(dest);
-  free(dest);
+  free_string(&dest);
   free_string(&one);
   free_string(&two);
   free_string(&three);
@@ -194,18 +192,17 @@ void test_string_array_join(void) {
   string_array_push(&arr, three);
   string_array_push(&arr, four);
   String semicolon = String_from(";");
-  String *out = string_array_join(&arr, semicolon);
+  String out = string_array_join(&arr, semicolon);
 
   String expected = String_from("one;two;three;four");
 
-  printf("out->chars = %s\n", out->chars);
+  printf("out->chars = %s\n", out.chars);
   printf("expected.chars = %s\n", expected.chars);
 
-  assert(String_cmp(out, &expected));
+  assert(String_cmp(&out, &expected));
 
   free_string_array(&arr);
-  free_string(out);
-  free(out);
+  free_string(&out);
   free_string(&four);
   free_string(&three);
   free_string(&two);

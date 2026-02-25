@@ -100,6 +100,7 @@ typedef struct {
 } StringArray;
 
 StringArray string_array_init(int32_t capacity);
+// `string_array_push` consumes the string data passed as parameter
 int32_t string_array_push(StringArray *self, const String);
 int32_t string_array_size(const StringArray *self);
 bool string_array_reserve(StringArray *self);
@@ -235,7 +236,7 @@ String String_concat(const String *left, const String *right) {
 }
 
 String String_join(int32_t n, ...) {
-  String out = STR_NULL;
+  String out = String_from("");
   String temp = String_from("");
   va_list args;
   va_start(args, n);

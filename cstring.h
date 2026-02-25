@@ -348,14 +348,12 @@ bool string_array_reserve(StringArray *self) {
 }
 int32_t string_array_push(StringArray *self, const String data) {
   assert(self != NULL);
-  String new_data = String_clone(&data);
-  assert(self != NULL);
   if (!string_array_reserve(self)) {
 
     printf("Cannot relloc memory into StringArray\n");
     assert(false);
   }
-  self->data[self->size] = new_data;
+  self->data[self->size] = data;
   self->size++;
   return self->size;
 }

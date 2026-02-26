@@ -214,12 +214,12 @@ String String_concat(const String *left, const String *right) {
   int32_t right_len = (right && right->chars) ? right->length : 0;
 
   int32_t new_size = left_len + right_len;
+  dest.length = new_size;
   dest.chars = (char *)malloc(new_size + 1);
   if (dest.chars == NULL) {
     printf("Unable to allocate memory\n");
     return STR_NULL;
   }
-  dest.length = new_size;
 
   int32_t offset = 0;
   if (left != NULL && left->chars != NULL) {
@@ -378,7 +378,7 @@ void print_string_array(const StringArray *arr) {
 }
 
 String string_array_join(StringArray *arr, String sep) {
-  String out = STR_NULL;
+  String out = String_from("");
   String temp;
 
   for (int32_t i = 0; i < arr->size; i++) {

@@ -58,7 +58,7 @@ String String_new_n(int32_t len);
 #define STR_NEW(value)                                                         \
   (String) { value, (int32_t)strlen(value) }
 
-#define STR_NULL (String){NULL, 0}
+static String STR_NULL = {NULL, 0};
 
 String String_clone(const String *);
 
@@ -236,6 +236,9 @@ String String_concat(const String *left, const String *right) {
 }
 
 String String_join(int32_t n, ...) {
+  if (n <= 0)
+    return STR_NULL;
+
   String out = String_from("");
   String temp = String_from("");
   va_list args;

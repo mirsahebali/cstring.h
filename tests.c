@@ -203,10 +203,6 @@ void test_string_array_join(void) {
 
   free_string_array(&arr);
   free_string(&out);
-  free_string(&four);
-  free_string(&three);
-  free_string(&two);
-  free_string(&one);
   free_string(&semicolon);
   free_string(&expected);
 }

@@ -63,3 +63,7 @@ free_string_array(&foo_string_array);
 
 
 Check [usage here](USAGE.md) 
+
+## TODO:
+ - [ ] Optimize string_array_join and String_join
+- [ ] Update API formatting to something consistent

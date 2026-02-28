@@ -7,6 +7,9 @@
 #define CSTRING_IMPLEMENTATION
 #include "cstring.h"
 
+#define TEST_STARTED printf("`%s` started\n", __FUNCTION__)
+#define TEST_PASSED printf("`%s` passed\n", __FUNCTION__)
+
 void test_string_from(void);
 void test_string_concat_char(void);
 void test_string_concat_cstr(void);
@@ -18,6 +21,8 @@ void test_string_concat(void);
 void test_string_join(void);
 void test_string_array_join(void);
 void test_string_to_int(void);
+void test_string_array_from_cstr(void);
+void test_string_array_from_cstr_list(void);
 
 int main() {
 
@@ -31,10 +36,60 @@ int main() {
   test_string_join();
   test_string_array_join();
   test_string_to_int();
+  test_string_array_from_cstr();
+  test_string_array_from_cstr_list();
   return 0;
+}
+void test_string_array_from_cstr(void) {
+  TEST_STARTED;
+
+  StringArray expected = string_array_init(3);
+  string_array_push(&expected, String_from("Hello"));
+  string_array_push(&expected, String_from("World"));
+  string_array_push(&expected, String_from("Foo"));
+  string_array_push(&expected, String_from("Bar"));
+
+  StringArray actual =
+      String_array_from_cstr(4, "Hello", "World", "Foo", "Bar");
+
+  assert(expected.size == actual.size);
+  for (int i = 0; i < expected.size; i++) {
+    String exp = string_array_get(&expected, i);
+    String act = string_array_get(&actual, i);
+    assert(String_cmp(&exp, &act));
+  }
+
+  free_string_array(&expected);
+  free_string_array(&actual);
+
+  TEST_PASSED;
+}
+
+void test_string_array_from_cstr_list(void) {
+  TEST_STARTED;
+
+  StringArray expected = string_array_init(3);
+  string_array_push(&expected, String_from("fizz"));
+  string_array_push(&expected, String_from("buzz"));
+  string_array_push(&expected, String_from("foo"));
+
+  const char *items[3] = {"fizz", "buzz", "foo"};
+  StringArray actual = String_array_from_str_list(3, items);
+
+  assert(expected.size == actual.size);
+  for (int i = 0; i < expected.size; i++) {
+    String exp = string_array_get(&expected, i);
+    String act = string_array_get(&actual, i);
+    assert(String_cmp(&exp, &act));
+  }
+
+  free_string_array(&expected);
+  free_string_array(&actual);
+  TEST_PASSED;
 }
 
 void test_string_to_int(void) {
+  TEST_STARTED;
   String input = STR_NEW("-1");
   int32_t out;
   bool is_success = String_to_int(&input, &out);
@@ -51,15 +106,18 @@ void test_string_to_int(void) {
   is_success = String_to_int(&input, &out);
   assert(is_success);
   assert(out == 34583);
+  TEST_PASSED;
 }
 
 void test_string_from(void) {
+  TEST_STARTED;
   String input = String_from("Hello, World");
   String expected = {"Hello, World", 12};
 
   assert(strcmp(input.chars, expected.chars) == 0);
   assert(input.length == expected.length);
   free_string(&input);
+  TEST_PASSED;
 }
 
 void test_string_concat_char(void) {
@@ -78,9 +136,11 @@ void test_string_concat_char(void) {
   free_string(&expected);
   free_string(&input);
   free_string(&test_str);
+  TEST_PASSED;
 }
 
 void test_string_concat_cstr(void) {
+  TEST_STARTED;
   String test_str = String_from("Hello");
   String input = concat_cstr(&test_str, ", World");
   String expected = String_from("Hello, World");
@@ -90,9 +150,11 @@ void test_string_concat_cstr(void) {
   free_string(&test_str);
   free_string(&input);
   free_string(&expected);
+  TEST_PASSED;
 }
 
 void test_string_cmp(void) {
+  TEST_STARTED;
   String left = String_from("Shawww");
   String right = String_from("Shawww");
   assert(String_cmp(&left, &right));
@@ -105,9 +167,11 @@ void test_string_cmp(void) {
 
   free_string(&left);
   free_string(&right);
+  TEST_PASSED;
 }
 
 void test_char_at_str(void) {
+  TEST_STARTED;
   String input = String_from("abc123");
   char out = String_char_at(&input, 0);
   char expected = 'a';
@@ -129,9 +193,11 @@ void test_char_at_str(void) {
   assert(out == expected);
 
   free_string(&input);
+  TEST_PASSED;
 }
 
 void test_string_concat(void) {
+  TEST_STARTED;
 
   String left = String_from("Hello, ");
   String right = String_from("World");
@@ -144,9 +210,11 @@ void test_string_concat(void) {
   free_string(&left);
   free_string(&right);
   free_string(&expected);
+  TEST_PASSED;
 }
 
 void test_string_join(void) {
+  TEST_STARTED;
 
   String one = String_from("one ");
   String two = String_from("two ");
@@ -164,11 +232,13 @@ void test_string_join(void) {
   free_string(&three);
   free_string(&four);
   free_string(&expected);
+  TEST_PASSED;
 }
 
 void test_string_from_char(void) {}
 
 void test_string_substr(void) {
+  TEST_STARTED;
   String input = String_from("Hello, World");
   String substr = String_substr_range(&input, 2, 5);
   String expected = String_from("llo, ");
@@ -177,9 +247,11 @@ void test_string_substr(void) {
   free_string(&expected);
   free_string(&substr);
   free_string(&input);
+  TEST_PASSED;
 }
 
 void test_string_array_join(void) {
+  TEST_STARTED;
   StringArray arr = string_array_init(2);
 
   String one = String_from("one");
@@ -205,4 +277,5 @@ void test_string_array_join(void) {
   free_string(&out);
   free_string(&semicolon);
   free_string(&expected);
+  TEST_PASSED;
 }

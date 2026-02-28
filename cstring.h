@@ -110,6 +110,8 @@ void print_string_array(const StringArray *);
 void free_string_array(StringArray *self);
 
 String string_array_join(StringArray *self, String sep);
+StringArray String_array_from_str_list(size_t len, const char *strs[]);
+StringArray String_array_from_cstr(size_t len, ...);
 
 #endif // !CSTRING_H
 
@@ -401,6 +403,31 @@ String string_array_join(StringArray *arr, String sep) {
   free_string(&temp);
 
   return out;
+}
+
+StringArray String_array_from_str_list(size_t len, const char *strs[]) {
+  StringArray str_array = string_array_init(len);
+
+  for (size_t i = 0; i < len; i++) {
+    String new_str = String_from(strs[i]);
+    string_array_push(&str_array, new_str);
+  }
+
+  return str_array;
+}
+StringArray String_array_from_cstr(size_t len, ...) {
+  StringArray str_array = string_array_init(len);
+  va_list args;
+
+  va_start(args, len);
+  for (size_t i = 0; i < len; i++) {
+    const char *cstr = va_arg(args, const char *);
+    String new_str = String_from(cstr);
+    string_array_push(&str_array, new_str);
+  }
+  va_end(args);
+
+  return str_array;
 }
 
 void free_string_array(StringArray *self) {

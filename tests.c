@@ -57,6 +57,8 @@ void test_string_array_from_cstr(void) {
     String exp = string_array_get(&expected, i);
     String act = string_array_get(&actual, i);
     assert(String_cmp(&exp, &act));
+    free_string(&exp);
+    free_string(&act);
   }
 
   free_string_array(&expected);
@@ -80,7 +82,11 @@ void test_string_array_from_cstr_list(void) {
   for (int i = 0; i < expected.size; i++) {
     String exp = string_array_get(&expected, i);
     String act = string_array_get(&actual, i);
+
     assert(String_cmp(&exp, &act));
+
+    free_string(&exp);
+    free_string(&act);
   }
 
   free_string_array(&expected);

@@ -371,7 +371,7 @@ int32_t string_array_capacity(const StringArray *self) {
 String string_array_get(const StringArray *self, int32_t index) {
   assert(self != NULL);
   assert(index >= 0 && index < self->size);
-  return self->data[index];
+  return String_clone(&self->data[index]);
 }
 
 void print_string_array(const StringArray *arr) {
@@ -398,6 +398,7 @@ String string_array_join(StringArray *arr, String sep) {
 
     free_string(&temp);
     temp = String_clone(&out);
+    free_string(&val);
   }
 
   free_string(&temp);
